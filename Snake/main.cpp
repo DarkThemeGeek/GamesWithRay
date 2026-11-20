@@ -7,6 +7,7 @@
 #include <deque>
 #include <iostream>
 #include <queue>
+#include <unistd.h>
 #define WIDTH 12
 #define HEGIHT 12
 #define LENGTH 40.f
@@ -24,7 +25,7 @@ int main() {
     SnakeGame game(WIDTH, HEGIHT, LENGTH);
 
     game.Init();
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !game.lost) {
         window.BeginDrawing();
 
         // Fixed updates independent of fps for speed
@@ -38,5 +39,9 @@ int main() {
         game.Draw();
 
         window.EndDrawing();
+        if (game.lost) {
+            sleep(1);
+            printf("game lost\n");
+        }
     }
 }

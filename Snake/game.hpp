@@ -1,6 +1,7 @@
 #include "raylib-cpp.hpp"
 #include "raylib.h"
 #include <Vector2.hpp>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <deque>
@@ -16,6 +17,8 @@ class SnakeGame {
   public:
     int width, height;
     float length;
+    bool lost = false;
+
     SnakeGame(int width, int height, float length)
         : width(width), height(height), length(length) {}
     void Update() {
@@ -32,12 +35,33 @@ class SnakeGame {
             movement = raylib::Vector2{1, 0};
         }
     }
+    void CheckCollsions(raylib::Vector2 &tail,raylib::Vector2& head) {
+        if (tail == snake.front()) {
+            lost = true;
+        }
+        if(head.x<0 || head.x>=width || head.y<0 || head.y>=height){
+            lost=true;
+        }
+        //! starting from one because 1 is head
+        for (int i = 1; i < snake.size(); i++) {
+            if (snake.front() == snake[i]) {
+
+                lost = true;
+            }
+        }
+        
+    }
     void FixedUpdate() {
         auto tail = snake.back();
 
         snake.pop_back();
+
+        CheckCollsions(tail,snake.front());
         snake.push_front(Vector2(movement + snake.front()));
+        // case with 2 parts
+
         bool dirty = false;
+
         std::erase_if(fruits, [&](auto &fruitPos) {
             if (fruitPos == snake.front()) {
                 snake.push_back(tail);
@@ -63,6 +87,9 @@ class SnakeGame {
         for (auto &fruit : fruits) {
             DrawCircle(fruit.x * length + length / 2,
                        fruit.y * length + length / 2, length / 2, RED);
+        }
+        if (lost) {
+            DrawText("you lost", 300, 300, 120, BLUE);
         }
     }
     void Init() {
