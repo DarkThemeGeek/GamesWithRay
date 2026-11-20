@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../include/raylib/raylib.h"
+#include "raylib.h"
 struct Block{
     Rectangle rect;
     bool alive=true;

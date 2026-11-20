@@ -1,4 +1,10 @@
-*
+*.d
+*.o
+*.json
+.cache/**
+build/**
 !*/
 !*.cpp
 !*.hpp
+!external
+program

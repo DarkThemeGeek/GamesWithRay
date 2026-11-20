@@ -1,6 +1,5 @@
 #pragma once
 #include "Core/GameEngine.hpp"
-#include <glm/vec2.hpp>
 #include <iostream>
 
 class FirstGame : GameEngine::Game {

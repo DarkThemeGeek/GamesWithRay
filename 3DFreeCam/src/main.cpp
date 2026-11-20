@@ -1,11 +1,9 @@
 #include "main.hpp"
-#include "../../include/raylib/raylib.h"
-#include "../../include/raylib/raymath.h"
+#include "raylib.h"
+#include "raymath.h"
 #include "Core/GameEngine.hpp"
 #include <cstdlib>
 #include <format>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/geometric.hpp>
 #include <iostream>
 
 int main() {

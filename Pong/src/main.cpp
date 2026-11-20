@@ -1,14 +1,12 @@
 #include "main.hpp"
-#include "../../include/raylib/raylib.h"
-#include "../../include/raylib/raymath.h"
 #include "Core/GameEngine.hpp"
 #include "Prefabs/block.hpp"
+#include "raylib-cpp.hpp"
+#include <Vector2.hpp>
 #include <cstdlib>
 #include <format>
-#include <glm/ext/vector_float2.hpp>
-#include <glm/geometric.hpp>
-#include <iostream>
 
+#include <iostream>
 int main() {
     int screenWidth = 800;
     int screenHeight = 600;
@@ -17,7 +15,8 @@ int main() {
 void FirstGame::Update() {
 
     rect.x = GetMouseX();
-    Vector2 mouseSpeed = GetMouseDelta() / GetFrameTime();
+    raylib::Vector2 mouseSpeed =
+        raylib::Vector2(GetMouseDelta()) / GetFrameTime();
     float restitution = 0.8f;
 
     // ball is in window
@@ -56,21 +55,21 @@ void FirstGame::Init() {
     // GameEngine::Game::Init();
 }
 
-glm::vec2 FirstGame::GetNormal(Circle &circle, const Rectangle &rect) {
+raylib::Vector2 FirstGame::GetNormal(Circle &circle, const Rectangle &rect) {
     // Closest point on AABB
-    glm::vec2 closest = {
+    raylib::Vector2 closest = {
         Clamp(circle.centre.x, rect.x, rect.x + rect.width),
         Clamp(circle.centre.y, rect.y, rect.y + rect.height)};
 
-    glm::vec2 diff = circle.centre - closest;
-    float dist2 = glm::dot(diff, diff);
+    raylib::Vector2 diff = circle.centre - closest;
+    float dist2 = diff.DotProduct(diff);
 
     // Handle "center inside rectangle" case
     if (dist2 < 1e-6f) {
-        glm::vec2 rectCenter = {rect.x + rect.width * 0.5f,
-                                rect.y + rect.height * 0.5f};
+        raylib::Vector2 rectCenter = {rect.x + rect.width * 0.5f,
+                                      rect.y + rect.height * 0.5f};
 
-        glm::vec2 d = circle.centre - rectCenter;
+        raylib::Vector2 d = circle.centre - rectCenter;
 
         float dx = rect.width * 0.5f - std::abs(d.x);
         float dy = rect.height * 0.5f - std::abs(d.y);
@@ -87,7 +86,7 @@ glm::vec2 FirstGame::GetNormal(Circle &circle, const Rectangle &rect) {
     }
 
     float dist = std::sqrt(dist2);
-    glm::vec2 normal = diff / dist;
+    raylib::Vector2 normal = diff / dist;
 
     float penetration = circle.radius - dist;
 
@@ -126,10 +125,9 @@ void FirstGame::HandleCollisons() {
     // checks pallet ball collison
     if (CheckCollisionCircleRec({circle.centre.x, circle.centre.y},
                                 circle.radius, rect)) {
-        circle.velocity =
-            glm::reflect(circle.velocity, GetNormal(circle, rect));
+        circle.velocity = circle.velocity.Reflect(GetNormal(circle, rect));
     }
-   
+
     // CheckBlockCollison
     for (int i = 0; i < 14; i++)
         for (int j = 0; j < 10; j++) {
@@ -137,8 +135,8 @@ void FirstGame::HandleCollisons() {
                 if (CheckCollisionCircleRec({circle.centre.x, circle.centre.y},
                                             circle.radius, blocks[i][j].rect)) {
                     blocks[i][j].alive = false;
-                    circle.velocity = glm::reflect(
-                        circle.velocity, GetNormal(circle, blocks[i][j].rect));
+                    circle.velocity = circle.velocity.Reflect(
+                        GetNormal(circle, blocks[i][j].rect));
                 }
 
             // std::cout<<std::format("circle centre x:{}
